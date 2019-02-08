@@ -1,4 +1,16 @@
 body {
-    background: green;
-    color: #333;
+    background: #e2f5c8;
+    color: #bb632d;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid black;
+}
+
+th, td {
+    white-space: nowrap;
 }

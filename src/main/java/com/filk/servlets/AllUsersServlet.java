@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class AllUsersServlet extends HttpServlet {
     public void doGet(HttpServletRequest request,
-                      HttpServletResponse response) throws ServletException, IOException {
+                      HttpServletResponse response) throws IOException {
 
         JdbcClient jdbcClient = new JdbcClient();
         ResultSet resultSet = jdbcClient.executeQuery("select id, first_name, last_name, salary from users;");
@@ -29,17 +29,6 @@ public class AllUsersServlet extends HttpServlet {
 
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
-
-    }
-
-    private static Map<String, Object> createPageVariablesMap(HttpServletRequest request) {
-        Map<String, Object> pageVariables = new HashMap<>();
-        pageVariables.put("method", request.getMethod());
-        pageVariables.put("URL", request.getRequestURL().toString());
-        pageVariables.put("pathInfo", request.getPathInfo());
-        pageVariables.put("sessionId", request.getSession().getId());
-        pageVariables.put("parameters", request.getParameterMap().toString());
-        return pageVariables;
     }
 
     private static String getUsersTableHtml(ResultSet resultSet) {
@@ -49,7 +38,7 @@ public class AllUsersServlet extends HttpServlet {
                 "        <th>First name</td>\n" +
                 "        <th>Last name</td>\n" +
                 "        <th>Salary</td>\n" +
-                "        <th>Actions</td>\n" +
+                "        <th colspan=\"2\">Actions</td>\n" +
                 "    </tr>\n");
         String userId;
         try {
@@ -65,9 +54,10 @@ public class AllUsersServlet extends HttpServlet {
                 response.append("</td><td>");
                 response.append(resultSet.getString("salary"));
                 response.append("</td><td>");
-                response.append("<input name=\"user_id\" type=\"hidden\" value=\"").append(userId).append("\">");
-                response.append("<input type=\"submit\" value=\"Edit\">");
-                response.append("<input type=\"submit\" value=\"Remove\">");
+                response.append("<form method=\"get\" action=\"/users/edit\"><input type=\"submit\" value=\"Edit\">");
+                response.append("<input name=\"user_id\" type=\"hidden\" value=\"").append(userId).append("\"></form></td><td>");
+                response.append("<form method=\"post\" action=\"/users/remove\"><input type=\"submit\" value=\"Remove\">");
+                response.append("<input name=\"user_id\" type=\"hidden\" value=\"").append(userId).append("\"></form>");
                 response.append("</td></tr>\n");
             }
         } catch (SQLException e) {

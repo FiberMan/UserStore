@@ -33,6 +33,27 @@ public class JdbcClient {
         return resultSet;
     }
 
+    public Integer executeUpdate(String query) {
+        int updatedRows;
+        try {
+            updatedRows = statement.executeUpdate(query/*, Statement.RETURN_GENERATED_KEYS*/);
+
+//            ResultSet rs = statement.getGeneratedKeys();
+//            if (rs.next()) {
+//                id = rs.getInt(1);
+//            }
+            //rs.close();
+
+            //statement.close();
+        } catch (SQLException e) {
+            System.out.println("Insert execution failed:");
+            System.out.println(query);
+            e.printStackTrace();
+            updatedRows = -1;
+        }
+        return updatedRows;
+    }
+
     public String executeSql(String sql) {
         String response = "";
         try {
