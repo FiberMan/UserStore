@@ -4,10 +4,10 @@ import java.io.*;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 public class JdbcClient {
     private final String propertiesPath = "config\\database.txt";
-    private Map<String, String> properties = new HashMap<>();
     private Connection connection;
     private Statement statement;
     private static JdbcClient jdbcClient;
@@ -20,10 +20,11 @@ public class JdbcClient {
     }
 
     private JdbcClient() {
-        getDatabaseProperties();
-        try {
-            connection = DriverManager.getConnection(properties.get("url"));
-        } catch (SQLException e) {
+        try(FileInputStream fileInputStream = new FileInputStream(propertiesPath)) {
+            Properties properties = new Properties();
+            properties.load(fileInputStream);
+            connection = DriverManager.getConnection(properties.getProperty("sqlite.db.url"));
+        } catch (SQLException | IOException e) {
             System.out.println("Connection to database failed.");
             e.printStackTrace();
         }
@@ -63,32 +64,5 @@ public class JdbcClient {
             System.out.println("Failed to close Statement.");
             e.printStackTrace();
         }
-    }
-
-    private void getDatabaseProperties() {
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(propertiesPath)))) {
-            String line;
-            while (bufferedReader.ready() && (line = bufferedReader.readLine()) != null) {
-                String[] splittedLine = line.split("=");
-                properties.put(splittedLine[0], splittedLine[1]);
-            }
-        } catch (IOException e) {
-            System.out.println("Error getting database properties.");
-            e.printStackTrace();
-        }
-    }
-
-    private static String generateHtmlTable(ResultSet resultSet) throws SQLException {
-        StringBuilder response = new StringBuilder();
-        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        int columnCount = resultSetMetaData.getColumnCount();
-        while (resultSet.next()) {
-            response.append("  <tr>");
-            for (int i = 1; i <= columnCount; i++) {
-                response.append("<td>").append(resultSet.getString(i)).append("</td>");
-            }
-            response.append("</tr>\n");
-        }
-        return "".contentEquals(response) ? "" : "<table>\n" + response.toString() + "</table>\n";
     }
 }

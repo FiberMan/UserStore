@@ -1,1 +1,1 @@
-url=jdbc:sqlite:test.db
+sqlite.db.url=jdbc:sqlite:test.db
