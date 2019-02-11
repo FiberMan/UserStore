@@ -10,12 +10,19 @@ public class JdbcClient {
     private Map<String, String> properties = new HashMap<>();
     private Connection connection;
     private Statement statement;
+    private static JdbcClient jdbcClient;
 
-    public JdbcClient() {
+    public static JdbcClient instance() {
+        if (jdbcClient == null) {
+            jdbcClient = new JdbcClient();
+        }
+        return jdbcClient;
+    }
+
+    private JdbcClient() {
         getDatabaseProperties();
         try {
             connection = DriverManager.getConnection(properties.get("url"));
-            statement = connection.createStatement();
         } catch (SQLException e) {
             System.out.println("Connection to database failed.");
             e.printStackTrace();
@@ -25,6 +32,7 @@ public class JdbcClient {
     public ResultSet executeQuery(String sql) {
         ResultSet resultSet = null;
         try {
+            statement = connection.createStatement();
             resultSet = statement.executeQuery(sql);
         } catch (SQLException e) {
             System.out.println("Query execution failed.");
@@ -36,17 +44,11 @@ public class JdbcClient {
     public Integer executeUpdate(String query) {
         int updatedRows;
         try {
-            updatedRows = statement.executeUpdate(query/*, Statement.RETURN_GENERATED_KEYS*/);
-
-//            ResultSet rs = statement.getGeneratedKeys();
-//            if (rs.next()) {
-//                id = rs.getInt(1);
-//            }
-            //rs.close();
-
-            //statement.close();
+            statement = connection.createStatement();
+            updatedRows = statement.executeUpdate(query);
+            close();
         } catch (SQLException e) {
-            System.out.println("Insert execution failed:");
+            System.out.println("Update execution failed:");
             System.out.println(query);
             e.printStackTrace();
             updatedRows = -1;
@@ -54,21 +56,13 @@ public class JdbcClient {
         return updatedRows;
     }
 
-    public String executeSql(String sql) {
-        String response = "";
+    public void close() {
         try {
-            if (statement.execute(sql)) {
-                ResultSet resultSet = statement.getResultSet();
-                response = generateHtmlTable(resultSet);
-            } else {
-                int updateCount = statement.getUpdateCount();
-                response = (updateCount == -1) ? "Query executed." : "Affected rows: " + updateCount;
-            }
+            statement.close();
         } catch (SQLException e) {
-            System.out.println("Something wrong with query execution.");
+            System.out.println("Failed to close Statement.");
             e.printStackTrace();
         }
-        return response;
     }
 
     private void getDatabaseProperties() {

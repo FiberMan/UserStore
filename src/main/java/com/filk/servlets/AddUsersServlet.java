@@ -13,10 +13,13 @@ import java.util.Map;
 public class AddUsersServlet extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws IOException {
+
+
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("title", "Add new user");
         pageVariables.put("action", "add");
         pageVariables.put("button_value", "Add");
+        pageVariables.put("user_id", "");
         pageVariables.put("first_name", "");
         pageVariables.put("last_name", "");
         pageVariables.put("salary", "");
@@ -33,16 +36,13 @@ public class AddUsersServlet extends HttpServlet {
         String userLastName = request.getParameter("last_name");
         String userSalary = request.getParameter("salary");
 
-        JdbcClient jdbcClient = new JdbcClient();
-        int updatedRows = jdbcClient.executeUpdate("INSERT INTO users(first_name, last_name, salary) values ('" + userFirstName + "', '" + userLastName + "', " + userSalary + ");");
+        int updatedRows = JdbcClient.instance().executeUpdate("INSERT INTO users(first_name, last_name, salary) values ('" + userFirstName + "', '" + userLastName + "', " + userSalary + ");");
 
         String updateResolution = (updatedRows == -1 ? "Failed to add new user: " : "New user has been added: ") + userFirstName + " " + userLastName;
         String title = updatedRows == -1 ? "Failed to add user" : "User added";
 
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("title", title);
-        pageVariables.put("first_name", userFirstName);
-        pageVariables.put("last_name", userLastName);
         pageVariables.put("update_resolution", updateResolution);
 
         response.getWriter().println(PageGenerator.instance().getPage("user_updated.html", pageVariables));

@@ -17,9 +17,9 @@ public class AllUsersServlet extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws IOException {
 
-        JdbcClient jdbcClient = new JdbcClient();
-        ResultSet resultSet = jdbcClient.executeQuery("select id, first_name, last_name, salary from users;");
+        ResultSet resultSet = JdbcClient.instance().executeQuery("select id, first_name, last_name, salary from users;");
         String usersTableBody = getUsersTableHtml(resultSet);
+        JdbcClient.instance().close();
 
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("title", "List of users");
@@ -29,6 +29,7 @@ public class AllUsersServlet extends HttpServlet {
 
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
+
     }
 
     private static String getUsersTableHtml(ResultSet resultSet) {
