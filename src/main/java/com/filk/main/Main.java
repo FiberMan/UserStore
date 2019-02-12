@@ -7,6 +7,12 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 public class Main {
     public static void main(String[] args) throws Exception {
+
+        // TODO: prepareStatement
+        // TODO: data, mapper, service, presentation layers
+        // TODO: bootstrap
+        // TODO: login
+
         AllUsersServlet allUsersServlet = new AllUsersServlet();
         AllRequestsServlet allRequestsServlet = new AllRequestsServlet();
         AddUsersServlet addUsersServlet = new AddUsersServlet();

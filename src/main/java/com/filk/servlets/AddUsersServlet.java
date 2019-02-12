@@ -14,7 +14,6 @@ public class AddUsersServlet extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws IOException {
 
-
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("title", "Add new user");
         pageVariables.put("action", "add");
@@ -34,7 +33,7 @@ public class AddUsersServlet extends HttpServlet {
                       HttpServletResponse response) throws IOException {
         String userFirstName = request.getParameter("first_name");
         String userLastName = request.getParameter("last_name");
-        String userSalary = request.getParameter("salary");
+        String userSalary = request.getParameter("s alary");
 
         int updatedRows = JdbcClient.instance().executeUpdate("INSERT INTO users(first_name, last_name, salary) values ('" + userFirstName + "', '" + userLastName + "', " + userSalary + ");");
 

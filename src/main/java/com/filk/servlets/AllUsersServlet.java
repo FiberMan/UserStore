@@ -33,6 +33,8 @@ public class AllUsersServlet extends HttpServlet {
     }
 
     private static String getUsersTableHtml(ResultSet resultSet) {
+        // TODO: generate table in freemarker
+        
         StringBuilder response = new StringBuilder("<table>\n" +
                 "    <tr>\n" +
                 "        <th>ID</td>\n" +
